@@ -57,11 +57,9 @@ export default class {
             });
 
           // Sort bills by descending date
-          const billSort = bills.sort((a, b) => {
-            if (a.date > b.date) return 1;
-            if (a.date < b.date) return -1;
-          });
-          return billSort;
+          bills.sort((a, b) => b - a.date);
+
+          return bills;
         });
     }
   };

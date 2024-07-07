@@ -136,8 +136,28 @@ describe("Given I am connected as an employee", () => {
 
       const updateSpy = jest.spyOn(mockStore.bills(), "update");
 
-      await newBill.updateBill(bill);
-      expect(updateSpy).toHaveBeenCalledWith({ data: JSON.stringify(bill), selector: newBill.billId });
+      // Remplir les champs du formulaire
+      const form = screen.getByTestId("form-new-bill");
+
+      fireEvent.change(screen.getByTestId("expense-type"), { target: { value: bill.type } });
+      fireEvent.change(screen.getByTestId("expense-name"), { target: { value: bill.name } });
+      fireEvent.change(screen.getByTestId("amount"), { target: { value: bill.amount.toString() } });
+      fireEvent.change(screen.getByTestId("datepicker"), { target: { value: bill.date } });
+      fireEvent.change(screen.getByTestId("vat"), { target: { value: bill.vat } });
+      fireEvent.change(screen.getByTestId("pct"), { target: { value: bill.pct.toString() } });
+      fireEvent.change(screen.getByTestId("commentary"), { target: { value: bill.commentary } });
+
+      fireEvent.submit(form);
+
+      await new Promise(process.nextTick); // Attendre que la promesse soit résolue
+
+      expect(updateSpy).toHaveBeenCalledWith({
+        data: JSON.stringify(bill),
+        selector: newBill.billId,
+      });
+
+      // S'assurer qu'aucun autre appel n'a été fait
+      expect(updateSpy).toHaveBeenCalledTimes(1);
     });
   });
 });
